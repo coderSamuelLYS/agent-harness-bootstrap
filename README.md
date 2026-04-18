@@ -143,11 +143,16 @@ The skill ships with templates so initialization does not depend on improvised f
 - `assets/PLANS.template.md`
 - `assets/design-docs.index.template.md`
 - `assets/references.index.template.md`
+- `assets/core-flows.template.md` — for documenting critical call paths
+- `assets/module-validation.template.md` — for module-specific validation commands
 - `assets/tech-debt-tracker.template.md`
 
 Optional:
 
-- `assets/layer-mapping.template.md`
+- `assets/layer-mapping.template.md` — for projects with explicit layering
+- `assets/glossary.template.md` — for project-specific terminology
+- `assets/ci-validation.template.md` — for CI/validation pipeline documentation
+- `assets/archive-template.md` — for archiving completed plans
 
 ---
 

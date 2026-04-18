@@ -50,7 +50,10 @@ metadata:
 
 可选模板：
 
-- `assets/layer-mapping.template.md`
+- `assets/layer-mapping.template.md`（分层映射）
+- `assets/glossary.template.md`（项目术语表，多模块项目强烈建议）
+- `assets/ci-validation.template.md`（CI/验证流水线说明）
+- `assets/archive-template.md`（计划归档模板，用于 `docs/exec-plans/completed/`）
 
 只有项目确实有显式分层，而且后面会做架构边界校验时，才创建 `layer-mapping.md`。
 
@@ -91,6 +94,33 @@ metadata:
 - 长期规则写进仓库文档，不要只写在 skill 里。
 - 模板里的占位内容要替换成项目真实信息，不要原样保留。
 
+## 幂等执行策略
+
+初始化应支持安全重复运行。检测与合并策略如下：
+
+**检测现有文件：**
+- 执行 `test -f <file>` 检查文件是否已存在
+- 对于已存在的文件，先读取现有内容，再决定是补充还是跳过
+
+**合并策略：**
+- `AGENTS.md`：已存在时，检查是否包含 `Read This First` 章节，若缺失则补充
+- `DESIGN.md`：已存在时，检查是否包含 `Goal` 章节，若缺失则补充
+- `PLANS.md`：已存在时，检查是否包含 `Validation Rule` 章节，若缺失则补充
+- 索引文件（`index.md`）：已存在时，合并新增条目，保留现有条目
+- `tech-debt-tracker.md`：已存在时，追加新条目，不覆盖现有内容
+
+**冲突处理：**
+- 如果检测到文件内容已包含模板的关键章节（通过章节标题匹配），则跳过该文件的写入
+- 在汇报时明确列出：新建的文件、更新的文件、跳过的文件（原因）
+
+**示例检测命令：**
+```bash
+# 检查核心文件是否存在
+test -f AGENTS.md && echo "AGENTS.md exists" || echo "AGENTS.md missing"
+test -f DESIGN.md && echo "DESIGN.md exists" || echo "DESIGN.md missing"
+test -f PLANS.md && echo "PLANS.md exists" || echo "PLANS.md missing"
+```
+
 ## 完成标准
 
 初始化完成时，至少要满足下面几点：
@@ -99,6 +129,33 @@ metadata:
 2. `AGENTS.md` 能指向其他核心文档
 3. `DESIGN.md`、`PLANS.md`、索引文件已经有最小可用内容
 4. 后续智能体不需要回来看本 skill，也能继续工作
+
+**自验证命令（执行此命令验证完成度）：**
+```bash
+set -e
+test -f AGENTS.md || { echo "FAIL: AGENTS.md missing"; exit 1; }
+test -f DESIGN.md || { echo "FAIL: DESIGN.md missing"; exit 1; }
+test -f PLANS.md || { echo "FAIL: PLANS.md missing"; exit 1; }
+test -d docs/design-docs || { echo "FAIL: docs/design-docs/ missing"; exit 1; }
+test -d docs/exec-plans/active || { echo "FAIL: docs/exec-plans/active/ missing"; exit 1; }
+test -d docs/exec-plans/completed || { echo "FAIL: docs/exec-plans/completed/ missing"; exit 1; }
+test -d docs/references || { echo "FAIL: docs/references/ missing"; exit 1; }
+test -f docs/design-docs/index.md || { echo "FAIL: docs/design-docs/index.md missing"; exit 1; }
+test -f docs/references/index.md || { echo "FAIL: docs/references/index.md missing"; exit 1; }
+test -f docs/exec-plans/tech-debt-tracker.md || { echo "FAIL: tech-debt-tracker.md missing"; exit 1; }
+
+# 检查占位符是否被替换（若包含尖括号占位符则警告）
+if grep -qE '<[^>]+>' AGENTS.md DESIGN.md PLANS.md docs/design-docs/index.md docs/references/index.md; then
+  echo "WARNING: Found placeholder content that should be replaced"
+fi
+
+echo "PASS: All required files and directories exist"
+```
+
+**最小可用内容检查：**
+- `AGENTS.md` 包含 `Read This First` 章节
+- `DESIGN.md` 包含 `Goal` 章节
+- `PLANS.md` 包含 `Validation Rule` 章节，且 `<test_command>` 已被替换为实际命令
 
 ## 汇报时要说什么
 
@@ -117,3 +174,44 @@ metadata:
 4. `docs/design-docs/index.md`
 5. `docs/references/index.md`
 6. 具体专题文档
+
+## AGENTS.md 与 CLAUDE.md 兼容性
+
+- 本 skill 使用 `AGENTS.md` 作为智能体入口（源自 OpenAI Harness Engineering 约定）。
+- Claude Code 原生会读取根目录的 `CLAUDE.md`。
+- 兼容方式：初始化时在 `CLAUDE.md` 中添加一行指向 `AGENTS.md`，内容如下：
+
+  ```markdown
+  # CLAUDE
+
+  项目智能体入口请阅读 `AGENTS.md`。
+  ```
+
+- 或直接将 `AGENTS.md` 作为 `CLAUDE.md` 使用，在文件头部添加 Claude 相关说明。
+
+## DESIGN.md 与 docs/design-docs/ 职责划分
+
+避免职责重叠，明确分工：
+
+**DESIGN.md（单页总览）：**
+- 职责：高层项目概述，作为索引入口
+- 内容范围：
+  - 项目 Goal、Scope
+  - 核心模块或分层（概要）
+  - 关键 Runtime Flow（简述）
+  - 主要 Integrations（列表）
+  - 指向 `docs/design-docs/index.md` 的链接
+- 不展开：详细的架构设计、具体的链路说明、技术细节
+
+**docs/design-docs/（深入专题）：**
+- 职责：详细设计文档的存储和索引
+- 内容范围：
+  - `core-flows.md`：详细的调用链路分析
+  - `layer-mapping.md`：完整的分层映射
+  - 其他专题设计文档
+- 更新方式：每次新增专题文档时更新 `index.md`
+
+**协作规则：**
+- `DESIGN.md` 保持简洁，通过链接指向详细文档
+- 详细设计放在 `docs/design-docs/` 下，通过 `index.md` 组织
+- Agent 先读 `DESIGN.md` 了解全局，再根据需要深入 `docs/design-docs/`
