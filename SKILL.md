@@ -50,12 +50,16 @@ metadata:
 
 可选模板：
 
-- `assets/layer-mapping.template.md`（分层映射）
-- `assets/glossary.template.md`（项目术语表，多模块项目强烈建议）
-- `assets/ci-validation.template.md`（CI/验证流水线说明）
+- `assets/layer-mapping.template.md`（分层映射，有显式分层且需要架构边界校验时创建）
+- `assets/glossary.template.md`（项目术语表，**多模块项目或复杂项目强烈建议**）
+- `assets/ci-validation.template.md`（CI/验证流水线说明，**有 CI/CD 流水的项目建议**）
 - `assets/archive-template.md`（计划归档模板，用于 `docs/exec-plans/completed/`）
 
-只有项目确实有显式分层，而且后面会做架构边界校验时，才创建 `layer-mapping.md`。
+**可选文档的创建规则：**
+- `glossary.md`：多模块项目、有业务术语的项目、需要频繁解释概念的项目应该创建
+- `ci-validation.md`：有 CI/CD 流水线的项目应该创建，方便本地开发对照
+
+这些文档不是必需的，但创建后能显著提升开发效率。
 
 如果项目是老项目、多模块项目，初始化时优先补下面两份资料：
 
@@ -96,22 +100,56 @@ metadata:
 
 ## 幂等执行策略
 
-初始化应支持安全重复运行。检测与合并策略如下：
+初始化应支持安全重复运行，且能随 skill 版本演进补进新章节。检测与合并策略如下：
 
 **检测现有文件：**
 - 执行 `test -f <file>` 检查文件是否已存在
-- 对于已存在的文件，先读取现有内容，再决定是补充还是跳过
+- 对于已存在的文件，先读取现有内容，再按章节级决定是否补充
 
-**合并策略：**
-- `AGENTS.md`：已存在时，检查是否包含 `Read This First` 章节，若缺失则补充
-- `DESIGN.md`：已存在时，检查是否包含 `Goal` 章节，若缺失则补充
-- `PLANS.md`：已存在时，检查是否包含 `Validation Rule` 章节，若缺失则补充
-- 索引文件（`index.md`）：已存在时，合并新增条目，保留现有条目
-- `tech-debt-tracker.md`：已存在时，追加新条目，不覆盖现有内容
+**合并策略（按章节级合并）：**
 
-**冲突处理：**
-- 如果检测到文件内容已包含模板的关键章节（通过章节标题匹配），则跳过该文件的写入
-- 在汇报时明确列出：新建的文件、更新的文件、跳过的文件（原因）
+`AGENTS.md` - 检查并补充以下章节（按顺序）：
+1. `## First Read` 或 `## Read This First`
+2. `## Project Stack`
+3. `## Build And Verify`
+4. `## Runtime Feedback`
+5. `## Docs Index`
+6. `## Architecture`
+7. `## Validation`
+8. `## Working Rule`
+9. `## Index Maintenance`（新增，若缺失则补充）
+- 原则：**只补充缺失的章节，不覆盖已存在的章节**
+
+`DESIGN.md` - 检查并补充以下章节：
+1. `## Goal`
+2. `## Scope`
+3. `## Architecture`
+4. `## Layering`
+5. `## Runtime Flow`
+6. `## Integrations`
+7. `## Constraints`
+8. `## Detailed Docs`
+- 原则：**只补充缺失的章节，不覆盖已存在的章节**
+
+`PLANS.md` - 检查并补充以下章节：
+1. `## Active Work`
+2. `## Next`
+3. `## Blockers`
+4. `## Validation Rule`（重点检查 `<test_command>` 是否已被替换）
+5. `## Blocker Handling`
+6. `## Active Plans`
+- 原则：**只补充缺失的章节，不覆盖已存在的章节**
+
+**索引文件合并：**
+- `docs/design-docs/index.md`：已存在时，合并新增条目，保留现有条目
+- `docs/references/index.md`：已存在时，合并新增条目，保留现有条目
+- `docs/exec-plans/tech-debt-tracker.md`：已存在时，追加新条目，不覆盖现有内容
+
+**章节合并实现要点：**
+- 检测每个章节标题是否存在（例如 `grep -q '## Index Maintenance' AGENTS.md`）
+- 如果章节不存在，从模板中提取该章节内容并追加到文件末尾
+- 如果章节已存在，跳过该章节的写入
+- 汇报时列出：新建的文件、新增的章节、跳过的章节（原因）
 
 **示例检测命令：**
 ```bash
@@ -119,6 +157,9 @@ metadata:
 test -f AGENTS.md && echo "AGENTS.md exists" || echo "AGENTS.md missing"
 test -f DESIGN.md && echo "DESIGN.md exists" || echo "DESIGN.md missing"
 test -f PLANS.md && echo "PLANS.md exists" || echo "PLANS.md missing"
+
+# 检查 AGENTS.md 是否包含 Index Maintenance 章节
+grep -q '## Index Maintenance' AGENTS.md && echo "Index Maintenance exists" || echo "Index Maintenance missing"
 ```
 
 ## 完成标准

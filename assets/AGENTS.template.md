@@ -30,13 +30,13 @@
 - `PLANS.md`
 - `docs/design-docs/`
 - `docs/design-docs/core-flows.md`
-- `docs/design-docs/glossary.md`  # 项目术语表，理解业务概念时优先读
+- `docs/design-docs/glossary.md`  # 如果项目已创建术语表，理解业务概念时优先读
 - `docs/exec-plans/active/`
 - `docs/exec-plans/completed/`
 - `docs/exec-plans/tech-debt-tracker.md`
 - `docs/references/`
 - `docs/references/module-validation.md`
-- `docs/references/ci-validation.md`  # CI/验证流水线说明
+- `docs/references/ci-validation.md`  # 如果项目已创建 CI 验证说明，查看验证命令时优先读
 
 ## Architecture
 - 分层和依赖约束以 `DESIGN.md` 和 `docs/design-docs/` 里的文档为准。
