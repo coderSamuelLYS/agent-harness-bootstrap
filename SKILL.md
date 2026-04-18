@@ -135,10 +135,11 @@ metadata:
 1. `## Active Work`（关键词：Active Work, 当前工作）
 2. `## Next`（关键词：Next, 下一步）
 3. `## Blockers`（关键词：Blockers, 阻塞点）
-4. `## Validation Rule`（关键词：Validation Rule, 验证规则）- **重点检查 `<test_command>` 是否已被替换**
+4. `## Validation Rule`（关键词：Validation Rule, 验证规则）- **特殊处理：即使章节已存在，也必须检查 `<test_command>` 是否已被替换**
 5. `## Blocker Handling`（关键词：Blocker Handling, 阻塞处理）
 6. `## Active Plans`（关键词：Active Plans, 活跃计划）
 - 原则：**只补充缺失的章节，不覆盖已存在的章节**
+- **例外：** `Validation Rule` 章节即使已存在，也要检查占位符
 
 **索引文件合并：**
 - `docs/design-docs/index.md`：已存在时，合并新增条目，保留现有条目
@@ -177,9 +178,29 @@ grep -qiE '^#+\s*(goal|目标|项目目标)' DESIGN.md && echo "Goal exists" || 
 
 **合并流程：**
 1. 对每个章节，先用语义匹配检测是否存在
-2. 如果存在，跳过该章节的写入
-3. 如果不存在，从模板中提取该章节内容并追加到文件末尾
-4. 汇报时列出：新建的文件、新增的章节、跳过的章节（原因）
+2. **如果存在：**
+   - 普通章节：跳过该章节的追加写入
+   - **特殊章节（PLANS.md 的 Validation Rule）：检查是否包含占位符**
+     - 使用 `grep -q '<[^>]+>'` 检测是否包含 `<test_command>` 等占位符
+     - 如果有占位符，根据项目扫描结果替换为真实值（如 `npm test`、`pytest`、`gradlew test`）
+     - 汇报时注明："Validation Rule 章节已存在，替换了占位符"
+3. **如果不存在：**
+   - 从模板中提取该章节内容
+   - 替换模板中的占位符为真实值
+   - 追加到文件末尾
+4. 汇报时列出：新建的文件、新增的章节、跳过的章节（原因）、替换的占位符
+
+**占位符检测和替换示例：**
+```bash
+# 检测 PLANS.md 是否包含未替换的占位符
+grep -qE '<[^>]+>' PLANS.md && echo "Found placeholders" || echo "No placeholders"
+
+# 检测特定占位符
+grep -q '<test_command>' PLANS.md && echo "test_command not replaced"
+
+# 替换占位符（示例）
+sed -i 's/<test_command>/npm test/g' PLANS.md
+```
 
 ## 完成标准
 
@@ -216,6 +237,7 @@ echo "PASS: All required files and directories exist"
 - `AGENTS.md` 包含 `Read This First` 章节
 - `DESIGN.md` 包含 `Goal` 章节
 - `PLANS.md` 包含 `Validation Rule` 章节，且 `<test_command>` 已被替换为实际命令
+- **重要：** 即使 PLANS.md 的 Validation Rule 章节已存在，也要检查并替换占位符
 
 ## 汇报时要说什么
 
