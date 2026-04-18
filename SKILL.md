@@ -109,35 +109,35 @@ metadata:
 **合并策略（按章节级合并）：**
 
 `AGENTS.md` - 检查并补充以下章节（按顺序）：
-1. `## First Read` 或 `## Read This First`
-2. `## Project Stack`
-3. `## Build And Verify`
-4. `## Runtime Feedback`
-5. `## Docs Index`
-6. `## Architecture`
-7. `## Validation`
-8. `## Working Rule`
-9. `## Index Maintenance`（新增，若缺失则补充）
+1. `## First Read` 或 `## Read This First`（关键词：First Read, Read This First, 首次阅读）
+2. `## Project Stack`（关键词：Project Stack, 项目栈, 技术栈）
+3. `## Build And Verify`（关键词：Build And Verify, 构建和验证）
+4. `## Runtime Feedback`（关键词：Runtime Feedback, 运行时反馈）
+5. `## Docs Index`（关键词：Docs Index, 文档索引）
+6. `## Architecture`（关键词：Architecture, 架构）
+7. `## Validation`（关键词：Validation, 验证）
+8. `## Working Rule`（关键词：Working Rule, 工作规则）
+9. `## Index Maintenance`（关键词：Index Maintenance, 索引维护）- **新增，若缺失则补充**
 - 原则：**只补充缺失的章节，不覆盖已存在的章节**
 
 `DESIGN.md` - 检查并补充以下章节：
-1. `## Goal`
-2. `## Scope`
-3. `## Architecture`
-4. `## Layering`
-5. `## Runtime Flow`
-6. `## Integrations`
-7. `## Constraints`
-8. `## Detailed Docs`
+1. `## Goal`（关键词：Goal, 目标, 项目目标）
+2. `## Scope`（关键词：Scope, 边界, 范围）
+3. `## Architecture`（关键词：Architecture, 架构）
+4. `## Layering`（关键词：Layering, 分层）
+5. `## Runtime Flow`（关键词：Runtime Flow, 运行链路）
+6. `## Integrations`（关键词：Integrations, 集成）
+7. `## Constraints`（关键词：Constraints, 约束）
+8. `## Detailed Docs`（关键词：Detailed Docs, 详细文档）
 - 原则：**只补充缺失的章节，不覆盖已存在的章节**
 
 `PLANS.md` - 检查并补充以下章节：
-1. `## Active Work`
-2. `## Next`
-3. `## Blockers`
-4. `## Validation Rule`（重点检查 `<test_command>` 是否已被替换）
-5. `## Blocker Handling`
-6. `## Active Plans`
+1. `## Active Work`（关键词：Active Work, 当前工作）
+2. `## Next`（关键词：Next, 下一步）
+3. `## Blockers`（关键词：Blockers, 阻塞点）
+4. `## Validation Rule`（关键词：Validation Rule, 验证规则）- **重点检查 `<test_command>` 是否已被替换**
+5. `## Blocker Handling`（关键词：Blocker Handling, 阻塞处理）
+6. `## Active Plans`（关键词：Active Plans, 活跃计划）
 - 原则：**只补充缺失的章节，不覆盖已存在的章节**
 
 **索引文件合并：**
@@ -146,21 +146,40 @@ metadata:
 - `docs/exec-plans/tech-debt-tracker.md`：已存在时，追加新条目，不覆盖现有内容
 
 **章节合并实现要点：**
-- 检测每个章节标题是否存在（例如 `grep -q '## Index Maintenance' AGENTS.md`）
-- 如果章节不存在，从模板中提取该章节内容并追加到文件末尾
-- 如果章节已存在，跳过该章节的写入
-- 汇报时列出：新建的文件、新增的章节、跳过的章节（原因）
 
-**示例检测命令：**
+**章节检测策略（语义匹配优先，精确匹配兜底）：**
+- 不要只依赖精确的章节标题匹配（如 `grep -q '## Index Maintenance'`）
+- 使用语义匹配：用正则表达式匹配章节的"核心关键词"，容忍格式变化
+- 如果语义匹配失败，再回退到精确标题匹配作为兜底
+
+**示例检测命令（语义匹配）：**
 ```bash
 # 检查核心文件是否存在
 test -f AGENTS.md && echo "AGENTS.md exists" || echo "AGENTS.md missing"
 test -f DESIGN.md && echo "DESIGN.md exists" || echo "DESIGN.md missing"
 test -f PLANS.md && echo "PLANS.md exists" || echo "PLANS.md missing"
 
-# 检查 AGENTS.md 是否包含 Index Maintenance 章节
-grep -q '## Index Maintenance' AGENTS.md && echo "Index Maintenance exists" || echo "Index Maintenance missing"
+# 语义匹配：检查 Index Maintenance 章节（容忍大小写、空格、符号变化）
+grep -qiE '^#+\s*(index\s*maintenance|maintenance\s*of\s*index|索引维护)' AGENTS.md && echo "Index Maintenance exists" || echo "Index Maintenance missing"
+
+# 语义匹配：检查 Validation 章节（容忍变化）
+grep -qiE '^#+\s*(validation|验证|验证规则)' PLANS.md && echo "Validation exists" || echo "Validation missing"
+
+# 语义匹配：检查 Goal 章节（容忍变化）
+grep -qiE '^#+\s*(goal|目标|项目目标)' DESIGN.md && echo "Goal exists" || echo "Goal missing"
 ```
+
+**风险说明：**
+- 老项目可能修改过章节标题（如 `## Validation` → `## Validation & Checks`）
+- 只用精确匹配会导致"误判为缺失"，重复添加章节
+- 语义匹配能降低这种误判，但不能完全消除
+- 对于高度定制的老项目，建议手动 review 合并结果
+
+**合并流程：**
+1. 对每个章节，先用语义匹配检测是否存在
+2. 如果存在，跳过该章节的写入
+3. 如果不存在，从模板中提取该章节内容并追加到文件末尾
+4. 汇报时列出：新建的文件、新增的章节、跳过的章节（原因）
 
 ## 完成标准
 
