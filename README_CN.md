@@ -139,11 +139,16 @@ AGENTS.md
 - `assets/PLANS.template.md`
 - `assets/design-docs.index.template.md`
 - `assets/references.index.template.md`
+- `assets/core-flows.template.md` — 用于记录核心调用链路
+- `assets/module-validation.template.md` — 用于记录模块验证命令
 - `assets/tech-debt-tracker.template.md`
 
 可选模板：
 
-- `assets/layer-mapping.template.md`
+- `assets/layer-mapping.template.md` — 用于有明确分层的项目
+- `assets/glossary.template.md` — 用于项目术语表
+- `assets/ci-validation.template.md` — 用于 CI/验证流水线说明
+- `assets/archive-template.md` — 用于归档已完成计划
 
 ---
 
