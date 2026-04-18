@@ -43,7 +43,9 @@ metadata:
 - `assets/DESIGN.template.md`
 - `assets/PLANS.template.md`
 - `assets/design-docs.index.template.md`
+- `assets/core-flows.template.md`
 - `assets/references.index.template.md`
+- `assets/module-validation.template.md`
 - `assets/tech-debt-tracker.template.md`
 
 可选模板：
@@ -51,6 +53,13 @@ metadata:
 - `assets/layer-mapping.template.md`
 
 只有项目确实有显式分层，而且后面会做架构边界校验时，才创建 `layer-mapping.md`。
+
+如果项目是老项目、多模块项目，初始化时优先补下面两份资料：
+
+- `docs/design-docs/core-flows.md`
+- `docs/references/module-validation.md`
+
+这两份比继续补通用模板更值钱。它们直接影响后续编码和复杂问题排查的速度。
 
 ## 怎么执行
 
@@ -69,7 +78,10 @@ metadata:
    - `docs/design-docs/index.md`
    - `docs/references/index.md`
    - `docs/exec-plans/tech-debt-tracker.md`
-6. 如果项目需要分层映射，再补：
+6. 如果项目是老项目、多模块项目，优先补：
+   - `docs/design-docs/core-flows.md`
+   - `docs/references/module-validation.md`
+7. 如果项目需要分层映射，再补：
    - `docs/design-docs/layer-mapping.md`
 
 ## 写入规则

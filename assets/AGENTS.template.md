@@ -11,6 +11,8 @@
 - `PLANS.md`
 - `docs/design-docs/index.md`
 - `docs/references/index.md`
+- `docs/design-docs/core-flows.md`  # 如果项目已补主链路说明，优先读
+- `docs/references/module-validation.md`  # 如果项目已补模块验证说明，优先读
 
 ## Build And Verify
 - Build: `<command>`
@@ -27,10 +29,12 @@
 - `DESIGN.md`
 - `PLANS.md`
 - `docs/design-docs/`
+- `docs/design-docs/core-flows.md`
 - `docs/exec-plans/active/`
 - `docs/exec-plans/completed/`
 - `docs/exec-plans/tech-debt-tracker.md`
 - `docs/references/`
+- `docs/references/module-validation.md`
 
 ## Architecture
 - 分层和依赖约束以 `DESIGN.md` 和 `docs/design-docs/` 里的文档为准。
