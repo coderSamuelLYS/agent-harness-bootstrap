@@ -1,0 +1,8 @@
+# Design Docs Index
+
+| Path | Summary | Last Updated |
+| --- | --- | --- |
+| `docs/design-docs/<doc>.md` | `<这篇文档解决什么问题>` | `<YYYY-MM-DD>` |
+
+## Notes
+- 新增设计文档时，同步更新这个索引。
