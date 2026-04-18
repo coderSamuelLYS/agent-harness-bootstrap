@@ -1,8 +1,7 @@
 # AGENTS
 
-## Purpose
-- 这个文件是后续智能体进入仓库后的第一入口。
-- 初始化完成后，优先读取本文件和它指向的索引文档，不再回看初始化 skill。
+## First Read
+- 先看这个文件，再按这里的链接继续读。
 
 ## Project Stack
 - <language / framework / runtime>
@@ -33,11 +32,11 @@
 - `docs/exec-plans/tech-debt-tracker.md`
 - `docs/references/`
 
-## Architecture Rule
-- 依赖和分层约束以 `DESIGN.md` 及 `docs/design-docs/` 中的设计文档为准。
-- 如果存在 `docs/design-docs/layer-mapping.md`，后续所有架构校验都应先参考该映射。
+## Architecture
+- 分层和依赖约束以 `DESIGN.md` 和 `docs/design-docs/` 里的文档为准。
+- 如果有 `docs/design-docs/layer-mapping.md`，先看它。
 
-## Validation Rule
+## Validation
 - 改完代码后，先执行真实验证命令，再汇报结果。
 - 如果验证失败，先看日志、测试输出和栈追踪，再决定下一步。
 

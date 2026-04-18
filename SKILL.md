@@ -1,17 +1,19 @@
 ---
-name: init-project
-description: 第一次把代码仓库初始化成 Agent 可读的项目结构，创建或补齐 AGENTS.md、DESIGN.md、PLANS.md、docs/ 及索引文档，并把后续工作规则写进仓库。当用户提到初始化项目、第一次建立 AGENTS.md、把老项目改造成 Agent-Readable、建立 docs 记录系统、落地统一项目模板时使用。初始化完成后，后续任务应直接读取仓库内 AGENTS.md 和索引文档，不再重复使用本 skill。
+name: agent-harness-bootstrap
+description: 第一次把代码仓库整理成 Agent 可读的项目结构，创建或补齐 AGENTS.md、DESIGN.md、PLANS.md、docs/ 和索引文档，把后续规则写进仓库。当用户提到初始化项目、第一次建立 AGENTS.md、把老项目改造成 Agent-Readable、建立 docs 记录系统、落地统一项目模板时使用。初始化完成后，后续任务直接读取仓库内 AGENTS.md 和索引文档，不再重复使用本 skill。
 metadata:
   tags: [project, docs, bootstrap, agent]
 ---
 
 # 初始化项目
 
-## 这个 skill 负责什么
+这个 skill 只做第一次初始化。
 
-- 只做一次性的项目初始化。
-- 把规则写进仓库，不把规则留在聊天里。
-- 初始化完成后，后续智能体直接读仓库里的 `AGENTS.md`、`DESIGN.md`、`PLANS.md` 和 `docs/`。
+- 创建 `AGENTS.md`、`DESIGN.md`、`PLANS.md`
+- 建 `docs/` 和索引文件
+- 把后续协作规则写进仓库
+
+初始化完成后，后续智能体直接读仓库里的 `AGENTS.md`、`DESIGN.md`、`PLANS.md` 和 `docs/`。
 
 ## 什么时候用
 
@@ -33,7 +35,7 @@ metadata:
 
 ## 用哪些模板
 
-初始化时优先使用现成模板，不要现场自由发挥。
+初始化时优先用现成模板。
 
 核心模板：
 
@@ -73,7 +75,7 @@ metadata:
 ## 写入规则
 
 - 已有文件优先补充和合并，不要无条件覆盖。
-- `AGENTS.md` 只做入口和索引，不写成长篇说明。
+- `AGENTS.md` 只做入口和索引。
 - 长期规则写进仓库文档，不要只写在 skill 里。
 - 模板里的占位内容要替换成项目真实信息，不要原样保留。
 

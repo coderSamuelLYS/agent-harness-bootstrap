@@ -1,33 +1,82 @@
-# init-project
+# Agent-Harness-Bootstrap
 
-`init-project` 是一个一次性初始化 skill。
+[中文说明](./README_CN.md)
 
-它的用途不是帮智能体长期干活，而是把一个普通代码仓库，改造成一个后续智能体能直接读、直接接手的项目环境。
+> **Stop babysitting your coding agent. Bootstrap the repo instead.**
+>
+> `agent-harness-bootstrap` turns a normal repository into an **Agent-Readable** workspace with a real entrypoint, repository-native working rules, and persistent project memory.
 
-换句话说，这个 skill 做的是第一步：
+![Paradigm](https://img.shields.io/badge/Paradigm-Agent--First-blueviolet.svg)
+![Architecture](https://img.shields.io/badge/Architecture-Harness_Engineering-success.svg)
+![Output](https://img.shields.io/badge/Output-Agent--Readable_Repo-black.svg)
 
-- 创建根级入口文件
-- 建立 `docs/` 记录系统
-- 给文档补索引
-- 把后续协作规则写进仓库
+Built around the same idea behind OpenAI's **Harness Engineering**: if you want agents to work well, stop stuffing rules into prompts and start putting them into the repository.
 
-初始化完成后，后续智能体不应该继续依赖这个 skill，而应该直接读取仓库里的 `AGENTS.md`、`DESIGN.md`、`PLANS.md` 和 `docs/` 文档。
+---
 
-## 这个 skill 解决什么问题
+## Why It Exists
 
-很多项目的问题不是“AI 不会写代码”，而是：
+Most teams do not fail with coding agents because the model is weak.
 
-- 仓库里没有给智能体看的入口
-- 规则散落在聊天记录里
-- 项目背景只存在于人脑子里
-- 后来的智能体不知道先看什么
-- 同一个项目每次初始化结果都不一样
+They fail because the repository has no harness.
 
-这个 skill 的目的，就是把这些信息第一次写进仓库，让仓库本身成为后续工作的依据。
+That usually looks like this:
 
-## 它会生成什么
+- every new session starts with another wall of copied context
+- architecture rules live in chat history instead of version control
+- the agent does not know what to read first
+- plans, blockers, and technical debt are scattered or missing
+- code gets written before the repo explains how work is supposed to happen
 
-初始化后，项目至少会有这套结构：
+So the problem is not only generation quality.
+
+The problem is that the repo is not engineered to be the working environment for an agent.
+
+`agent-harness-bootstrap` fixes that first.
+
+---
+
+## What You Get
+
+After bootstrap, the repo stops behaving like a pile of source files and starts behaving like an engineered workspace for agents.
+
+You get:
+
+- a real first entrypoint: `AGENTS.md`
+- a design surface: `DESIGN.md`
+- an execution and validation surface: `PLANS.md`
+- a memory layer under `docs/`
+- index files so agents load context in layers instead of swallowing everything at once
+
+The result is simple:
+
+**after bootstrap, the repository becomes the source of working context.**
+
+---
+
+## Before vs After
+
+### Before
+
+The project depends on repeated prompting:
+
+> "Use this architecture, remember this validation rule, read this file first, don't forget this convention, and by the way here's the background again..."
+
+### After
+
+The project explains itself:
+
+> "Read `AGENTS.md`. Follow the index. Work from the repository."
+
+That is the real shift.
+
+You stop treating every session like a fresh onboarding call and start treating the repository like an engineered runtime for agents.
+
+---
+
+## What Gets Created
+
+Bootstrap produces a minimum structure like this:
 
 ```text
 docs/
@@ -44,30 +93,50 @@ PLANS.md
 AGENTS.md
 ```
 
-其中各文件的职责是：
+Each file has a clear job:
 
 - `AGENTS.md`
-  后续智能体进入仓库后的第一入口，只负责索引和阅读顺序。
+  The first file an agent should read. It points to the rest of the repo.
 - `DESIGN.md`
-  项目高层设计、边界、核心结构。
+  High-level structure, boundaries, and long-lived project rules.
 - `PLANS.md`
-  当前活跃任务、下一步、验证规则、blocker 记录方式。
+  Active work, next steps, validation expectations, and blocker handling.
 - `docs/design-docs/index.md`
-  设计文档目录。
+  The index for design documentation.
 - `docs/references/index.md`
-  外部依赖、接口、平台资料入口。
+  The index for external APIs, platforms, and supporting material.
 - `docs/exec-plans/tech-debt-tracker.md`
-  技术债记录入口。
+  The place where unresolved debt is recorded instead of silently forgotten.
 
-如果项目确实有明确分层，还可以额外生成：
+If the project has explicit layering, you can also add:
 
 - `docs/design-docs/layer-mapping.md`
 
-## 模板文件
+---
 
-这个 skill 自带一组模板，初始化时优先用模板，不要让模型现场编一套新格式。
+## Why This Is Different
 
-核心模板：
+A normal project template gives you folders.
+
+`agent-harness-bootstrap` gives you an operating shape for agent collaboration.
+
+It answers questions normal scaffolds usually ignore:
+
+- where should an agent start reading
+- where should design rules live
+- where should plans and blockers live
+- how do you avoid re-explaining the same repo every session
+- how do you move context from chat into versioned files
+
+This is not about making the repo look tidy.
+
+It is about making the repo usable by an agent that has to keep working tomorrow, not just right now.
+
+---
+
+## Included Templates
+
+The skill ships with templates so initialization does not depend on improvised formatting:
 
 - `assets/AGENTS.template.md`
 - `assets/DESIGN.template.md`
@@ -76,53 +145,63 @@ AGENTS.md
 - `assets/references.index.template.md`
 - `assets/tech-debt-tracker.template.md`
 
-可选模板：
+Optional:
 
 - `assets/layer-mapping.template.md`
 
-## 什么时候该用
+---
 
-适合下面这些场景：
+## Best Fit
 
-- 新项目第一次初始化
-- 老项目第一次补 `AGENTS.md`
-- 老项目第一次建立 `docs/` 记录系统
-- 希望以后智能体不再依赖聊天记录，而是直接依赖仓库文档
+Use it when:
 
-## 什么时候不该用
+- a new repository is being set up for agent-first development
+- an older repository needs its first real `AGENTS.md`
+- your team wants the repo, not chat history, to hold the working rules
+- you want future agents to inherit project context from files instead of from repeated prompting
 
-不适合下面这些场景：
+Do not use it for:
 
-- 日常开发任务
-- 修一个具体 bug
-- 补一个单独测试
-- 改一页普通文档
-- 后续某次单独加一条架构规则
+- ordinary feature work
+- a one-off bug fix
+- a single test addition
+- a small documentation patch
+- adding one isolated rule long after initialization
 
-这些工作应该直接按项目仓库里已经写好的规则做，而不是重新跑一遍初始化。
+Those tasks should run on top of the harness, not recreate it.
 
-## 这个 skill 的边界
+---
 
-它只负责第一次把规则载体建起来。
+## Scope
 
-它不负责：
+This project is intentionally narrow.
 
-- 长期替代 `AGENTS.md`
-- 长期替代项目设计文档
-- 反复参与日常编码
-- 成为每次任务都要回看的总入口
+It does one thing:
 
-初始化完成后，仓库本身才是规则来源。
+**bootstrap the harness once.**
 
-## 初始化完成后的工作方式
+It does not try to:
 
-后续智能体默认按这个顺序读取项目：
+- replace day-to-day development
+- replace project documentation itself
+- act as the permanent brain of the repo
+- be re-run every time an agent touches the codebase
+
+Once the bootstrap is done, the repository should take over.
+
+---
+
+## How Agents Should Enter the Repo
+
+After initialization, the default read order is:
 
 1. `AGENTS.md`
 2. `DESIGN.md`
 3. `PLANS.md`
 4. `docs/design-docs/index.md`
 5. `docs/references/index.md`
-6. 当前任务真正相关的专题文档
+6. the specific docs needed for the current task
 
-这也是这个 skill 的最终目标：让后续工作不再依赖这个 skill，而是依赖仓库。
+That is the whole point of this project:
+
+it makes the answer to "where does the agent get its context?" explicit, versioned, and local to the repository.

@@ -10,8 +10,8 @@
 - <核心模块或分层>
 
 ## Layering
-- <如果项目存在明确分层，在这里写清楚分层规则>
-- <如果存在 `docs/design-docs/layer-mapping.md`，在这里引用它>
+- <如果项目有明确分层，在这里写清楚>
+- <如果有 `docs/design-docs/layer-mapping.md`，在这里引用>
 
 ## Runtime Flow
 - <关键运行链路>
@@ -21,7 +21,7 @@
 
 ## Constraints
 - <当前约束>
-- <哪些规则后续要通过测试、lint 或 CI 固化>
+- <后续要通过测试、lint 或 CI 固化的规则>
 
 ## Detailed Docs
 - `docs/design-docs/index.md`
